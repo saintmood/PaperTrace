@@ -1,0 +1,32 @@
+[project]
+name = "papertrace"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "mirascope>=2.4.0",
+    "numpy>=2.4.6",
+    "pydantic>=2.13.4",
+    "pypdf>=6.12.2",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "deepeval>=4.0.5",
+    "ipython>=9.14.0",
+    "isort>=8.0.1",
+]
+[tool.black]
+line-length = 100
+target-version = ["py314"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
