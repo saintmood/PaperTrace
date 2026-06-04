@@ -4,6 +4,16 @@ from config import settings
 from application.models import ArticleMetadata
 
 
+def get_token_usage(llm_response: any) -> int:
+    """
+    Utility function to extract token usage from a Mirascope LLM response.
+    This can be used for monitoring and enforcing token budgets.
+    """
+    if hasattr(llm_response, "usage") and hasattr(llm_response.usage, "total_tokens"):
+        return llm_response.usage.total_tokens
+    return 0
+
+
 @llm.call(model=settings.llm_model_name, format=ArticleMetadata)
 def extract_article_metadata(raw_text: str, previous_error: str | None = None) -> ArticleMetadata:
     """

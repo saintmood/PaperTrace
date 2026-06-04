@@ -4,7 +4,8 @@ from pydantic import ValidationError
 
 from application.interfaces import ILLMAgent
 from application.models import ProcessingContext, ArticleMetadata
-from application.infra.mirascope import extract_article_metadata
+from application.infra.mirascope import extract_article_metadata, get_token_usage
+from application.exceptions import AIProcessingError, TokenBudgetExceededError
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -27,22 +28,34 @@ class WorkerAgent(ILLMAgent):
             try:
                 logger.info(f"WorkerAgent extraction attempt {attempt}/{self.max_retries}...")
 
-                draft_metadata: ArticleMetadata = extract_article_metadata(context.raw_text)
+                draft_metadata: ArticleMetadata = extract_article_metadata(
+                    context.raw_text, last_error
+                )
+                token_usage = get_token_usage(draft_metadata)
+                context.total_tokens_used += token_usage
+                if context.total_tokens_used > settings.max_token_budget:
+                    logger.error(
+                        f"🚨 TOKEN BUDGET EXCEEDED! Used: {context.total_tokens_used}, Limit: {settings.max_token_budget}"
+                    )
+                    raise TokenBudgetExceededError(
+                        f"Token budget exceeded: {context.total_tokens_used} tokens used."
+                    )
                 self._validate_draft(draft_metadata)
                 # Attach the draft to the context
                 context.draft_metadata = draft_metadata
                 return context
             except ValidationError as e:
-                # Pydantic errors are highly detailed. The LLM will understand them!
                 last_error = f"JSON Schema / Type Validation Error: {e}"
                 logger.warning(f"Attempt {attempt} failed structural check.")
 
             except ValueError as e:
-                # Our business logic error
                 last_error = f"Business Logic Error: {e}"
                 logger.warning(f"Attempt {attempt} failed semantic check.")
 
             attempt += 1
+        raise AIProcessingError(
+            f"WorkerAgent failed after {self.max_retries} attempts. Last error: {last_error}"
+        )
 
     def _validate_draft(self, metadata: ArticleMetadata) -> None:
         """
@@ -56,6 +69,9 @@ class WorkerAgent(ILLMAgent):
 
         if len(metadata.abstract) < 10:
             raise ValueError("Extracted abstract is suspiciously short.")
+
+        if len(metadata.keywords) == 0:
+            raise ValueError("No keywords extracted, at least one is expected.")
 
 
 class SupervisorAgent(ILLMAgent):
