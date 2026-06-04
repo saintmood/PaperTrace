@@ -1,4 +1,5 @@
 from enum import Enum
+
 from pydantic import BaseModel
 
 
@@ -11,14 +12,6 @@ class ArticleState(str, Enum):
     REJECTED = "REJECTED"
 
 
-class ArticleMetadata(BaseModel):
-    """Pure Domain Model: Only the final structured data."""
-
-    title: str
-    authors: list[str]
-    abstract: str
-
-
 class DocumentRecord(BaseModel):
     """Database record representation."""
 
@@ -26,6 +19,15 @@ class DocumentRecord(BaseModel):
     file_path: str
     metadata: ArticleMetadata
     state: ArticleState = ArticleState.RAW
+
+
+class ArticleMetadata(BaseModel):
+    """Pure Domain Model: Only the final structured data."""
+
+    title: str
+    authors: list[str]
+    abstract: str
+    keywords: list[str]
 
 
 class ProcessingContext(BaseModel):

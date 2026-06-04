@@ -1,5 +1,6 @@
-from typing import Protocol, Any
-from models import ProcessingContext
+from typing import Protocol
+
+from application.models import ProcessingContext
 
 
 class IPDFReader(Protocol):

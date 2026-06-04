@@ -10,7 +10,8 @@ class ApplicationConfig(BaseSettings):
     """
 
     llm_model_name: str = Field(
-        default="gemini-2.5-flash", description="The specific LLM version to use for extraction."
+        default="ollama/qwen2.5-coder:7b",
+        description="The specific LLM version to use for extraction.",
     )
 
     # 2. File System and Database Paths

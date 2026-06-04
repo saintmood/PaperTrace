@@ -1,5 +1,5 @@
-from application.interfaces import ILLMAgent, IArticleRepository, IPDFReader
-from application.models import ProcessingContext, ArticleState
+from application.interfaces import ILLMAgent, IPDFReader
+from application.models import ArticleState, DocumentRecord, ProcessingContext
 
 
 class ProcessNewArticle:
@@ -12,12 +12,10 @@ class ProcessNewArticle:
         pdf_reader: IPDFReader,
         worker_agent: ILLMAgent,
         supervisor_agent: ILLMAgent,
-        repo: IArticleRepository,
     ):
         self.pdf_reader = pdf_reader
         self.worker_agent = worker_agent
         self.supervisor_agent = supervisor_agent
-        self.repo = repo
 
     def execute(self, file_path: str):
         # 1. Initialize the State Object
