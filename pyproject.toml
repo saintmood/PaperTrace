@@ -6,8 +6,9 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "click>=8.3.3",
-    "mirascope>=2.4.0",
+    "mirascope>=1.0.0",
     "numpy>=2.4.6",
+    "openai>=2.42.0",
     "pydantic>=2.13.4",
     "pypdf>=6.12.2",
 ]
@@ -16,6 +17,7 @@ dependencies = [
 dev = [
     "black>=26.5.1",
     "deepeval>=4.0.5",
+    "ipdb>=0.13.13",
     "ipython>=9.14.0",
     "isort>=8.0.1",
 ]

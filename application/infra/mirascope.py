@@ -38,6 +38,11 @@ def extract_article_metadata(raw_text: str, previous_error: str | None = None) -
     2. Extract the list of Authors.
     3. Extract the Keywords (maximum 5 keywords).
     4. Extract the Abstract, ensuring it is concise and free of any hallucinated information.
+
+    CRITICAL FORMATTING RULES:
+    1. You MUST return ONLY valid JSON.
+    2. DO NOT use XML. DO NOT use HTML.
+    3. DO NOT wrap the JSON in markdown blocks (no ```json). Just return the raw JSON string.
     
     PAPER TEXT:
     {raw_text}

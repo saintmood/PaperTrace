@@ -10,7 +10,7 @@ class ApplicationConfig(BaseSettings):
     """
 
     llm_model_name: str = Field(
-        default="ollama/qwen2.5-coder:7b",
+        default="ollama/qwen2.5-coder-7b-instruct-q6_k-00001-of-00002.gguf",
         description="The specific LLM version to use for extraction.",
     )
 
@@ -35,6 +35,18 @@ class ApplicationConfig(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",  # Ignore any extra variables in the .env file
+    )
+
+    ollama_base_url: str = Field(
+        default="http://127.0.0.1:8080",
+    )
+
+    ollama_api_key: str = Field(
+        default="sk-no-key-required",
+    )
+
+    worker_max_retries: int = Field(
+        default=3, description="Maximum retries for worker tasks before giving up."
     )
 
 
