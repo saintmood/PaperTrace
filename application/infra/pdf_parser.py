@@ -1,4 +1,11 @@
+import logging
+import re
+
+import fitz
+
 from application.interfaces import IPDFReader
+
+logger = logging.getLogger(__name__)
 
 
 class PyPDFReader(IPDFReader):
@@ -7,7 +14,25 @@ class PyPDFReader(IPDFReader):
     def extract_optimized_text(self, file_path: str) -> str:
         """
         Extracts only Page 1, Last, and Penultimate pages.
-        Reduces context by 90% and helps 3.15 JIT[cite: 49, 50, 51, 52].
         """
-        # Placeholder: PyPDF logic here
-        return "Extracted optimized text from edge pages. Title = Sample Title, Authors = Sample Author, Keywords = Sample Keywords, Abstract = Sample Abstract."
+        doc = fitz.open(file_path)
+        page_conunt = doc.page_count
+        logger.info("Extracting the first page (Title, Authors, Keyword)")
+        first_page = doc.load_page(0).get_text("text")
+        second_page = doc.load_page(1).get_text("text")
+        conclusion_page = None
+        for idx in range(page_conunt - 1, 0, -1):
+            page_text = doc.load_page(idx).get_text("text")
+            if re.search(
+                r"(?m)^\s*(?:\d+\.?|[IVX]+\.?\s*)?Conclusions?\b", page_text, re.IGNORECASE
+            ):
+                logger.info(f"Extracting the conclusion page (Page {idx + 1})")
+                conclusion_page = page_text
+        raw_text = (
+            first_page
+            + "\n"
+            + second_page
+            + "\nCONCLUSIONS\n"
+            + (conclusion_page if conclusion_page else "")
+        )
+        return raw_text
