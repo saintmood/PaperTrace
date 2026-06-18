@@ -20,6 +20,7 @@ class PyPDFReader(IPDFReader):
         logger.info("Extracting the first page (Title, Authors, Keyword)")
         first_page = doc.load_page(0).get_text("text")
         second_page = doc.load_page(1).get_text("text")
+        third_page = doc.load_page(2).get_text("text")
         conclusion_page = None
         for idx in range(page_conunt - 1, 0, -1):
             page_text = doc.load_page(idx).get_text("text")
@@ -32,6 +33,9 @@ class PyPDFReader(IPDFReader):
             first_page
             + "\n"
             + second_page
+            + "\n"
+            + third_page
+            + "\n"
             + "\nCONCLUSIONS\n"
             + (conclusion_page if conclusion_page else "")
         )
