@@ -27,7 +27,10 @@ class WorkerAgent(ILLMAgent):
             try:
                 logger.info(f"WorkerAgent extraction attempt {attempt}/{self.max_retries}...")
 
-                draft_metadata: ArticleMetadata = extract_article_metadata(context.raw_text)
+                response = extract_article_metadata(
+                    context.raw_text, last_error
+                )
+                draft_metadata: ArticleMetadata = response.parse()
                 self._validate_draft(draft_metadata)
                 # Attach the draft to the context
                 context.draft_metadata = draft_metadata
@@ -41,6 +44,9 @@ class WorkerAgent(ILLMAgent):
                 # Our business logic error
                 last_error = f"Business Logic Error: {e}"
                 logger.warning(f"Attempt {attempt} failed semantic check.")
+            except Exception as e:
+                # Catch-all for unexpected errors
+                logger.error(f"Attempt {attempt} encountered an unexpected error: {e}")
 
             attempt += 1
 
