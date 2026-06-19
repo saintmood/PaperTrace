@@ -28,7 +28,7 @@ class ApplicationConfig(BaseSettings):
         default=3, description="Maximum allowed iterations for the Refinement (Critic) loop."
     )
     max_token_budget: int = Field(
-        default=10000, description="Maximum tokens allowed per processing pipeline run."
+        default=20000, description="Maximum tokens allowed per processing pipeline run."
     )
     # Tell Pydantic to read from the local .env file
     model_config = SettingsConfigDict(

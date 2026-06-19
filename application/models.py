@@ -28,6 +28,7 @@ class ArticleMetadata(BaseModel):
     authors: list[str]
     abstract: str
     keywords: list[str]
+    reasoning: str | None = None  # Optional field to capture LLM's reasoning process
 
 
 class ProcessingContext(BaseModel):
