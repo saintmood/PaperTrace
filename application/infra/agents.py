@@ -2,10 +2,14 @@ import logging
 
 from pydantic import ValidationError
 
-from application.interfaces import ILLMAgent
-from application.models import ProcessingContext, ArticleMetadata
-from application.infra.mirascope import extract_article_metadata, get_token_usage
 from application.exceptions import AIProcessingError, TokenBudgetExceededError
+from application.infra.mirascope import (
+    extract_article_metadata,
+    get_token_usage,
+    review_article_metadata,
+)
+from application.interfaces import ILLMAgent
+from application.models import ArticleMetadata, ArticleState, EvaluationResponse, ProcessingContext
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -29,11 +33,7 @@ class WorkerAgent(ILLMAgent):
                 logger.info(f"WorkerAgent extraction attempt {attempt}/{self.max_retries}...")
 
                 response = extract_article_metadata(context.raw_text, last_error)
-                draft_metadata: ArticleMetadata = response.parse()
-                draft_metadata: ArticleMetadata = extract_article_metadata(
-                    context.raw_text, last_error
-                )
-                token_usage = get_token_usage(draft_metadata)
+                token_usage = get_token_usage(response)
                 context.total_tokens_used += token_usage
                 if context.total_tokens_used > settings.max_token_budget:
                     logger.error(
@@ -42,6 +42,7 @@ class WorkerAgent(ILLMAgent):
                     raise TokenBudgetExceededError(
                         f"Token budget exceeded: {context.total_tokens_used} tokens used."
                     )
+                draft_metadata: ArticleMetadata = response.parse()
                 self._validate_draft(draft_metadata)
                 # Attach the draft to the context
                 context.draft_metadata = draft_metadata
@@ -83,16 +84,15 @@ class SupervisorAgent(ILLMAgent):
     """Validates the draft against the original text."""
 
     def process(self, context: ProcessingContext) -> ProcessingContext:
+        logger.info("SupervisorAgent is reviewing the draft metadata...")
         if not context.draft_metadata:
             raise ValueError("SupervisorAgent requires a draft_metadata to review.")
-
-        # Placeholder: @mirascope.call comparing text and draft
-        # final_result = mirascope_review(context.raw_text, context.draft_metadata)
-
-        # Attach the final, refined data to the context
-        context.final_metadata = ArticleMetadata(
-            title="Refined Title",
-            authors=["John Doe", "Jane Smith"],
-            abstract="Refined abstract without hallucinations.",
-        )
+        
+        draft_metadata_json = context.draft_metadata.model_dump_json(indent=2)
+        response = review_article_metadata(context.raw_text, draft_metadata_json)
+        supervisor_evaluation: EvaluationResponse = response.parse()
+        if supervisor_evaluation.is_approved:
+            context.final_metadata = context.draft_metadata
+            context.superviser_review = supervisor_evaluation
+            logger.info("SupervisorAgent approved the draft metadata.")
         return context

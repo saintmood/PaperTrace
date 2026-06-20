@@ -2,8 +2,8 @@ import json
 
 from mirascope import llm
 
+from application.models import ArticleMetadata, EvaluationResponse
 from config import settings
-from application.models import ArticleMetadata
 
 
 def get_token_usage(llm_response: any) -> int:
@@ -60,6 +60,38 @@ def extract_article_metadata(raw_text: str, previous_error: str | None = None) -
     {error_section}
 
     REQUIRED JSON SCHEMA:
-    {schema}
+    {json.dumps(schema, indent=2)}
 
+    """
+
+
+@llm.call(model=settings.llm_model_name, format=EvaluationResponse)
+def review_article_metadata(
+    raw_text: str, article_metadata: str | None = None
+) -> EvaluationResponse:
+    schema = EvaluationResponse.model_json_schema()
+    return f"""
+    You are a strict academic Supervisor and Reviewer.
+    Your task is to verify if the extracted "Draft Metadata" PERFECTLY matches the original "Paper Text".
+    
+    VERIFICATION RULES:
+    1. Check if the Title is exactly as written in the text.
+    2. Check if all Authors are included and spelled correctly.
+    3. Ensure the Abstract is not cut off.
+    4. If the draft is perfect, set 'is_approved' to true.
+    5. If there are ANY errors, set 'is_approved' to false, explain the error in 'feedback', and provide the fixed metadata in 'suggested_corrections'.
+    
+    CRITICAL FORMATTING RULES:
+    1. You MUST return ONLY pure, valid JSON.
+    2. DO NOT use XML, HTML, or markdown formatting blocks (no ```json).
+    3. Your output MUST EXACTLY match the following REQUIRED_JSON_SCHEMA schema. DO NOT add any extra wrapper keys like "arguments" or "name". 
+    
+    REQUIRED_JSON_SCHEMA:
+    {json.dumps(schema, indent=2)}
+    
+    PAPER TEXT:
+    {raw_text}
+    
+    DRAFT METADATA TO REVIEW:
+    {article_metadata}
     """

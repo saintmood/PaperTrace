@@ -1,9 +1,10 @@
-import sys
-import click
 import logging
+import sys
 
+import click
+
+from application.infra.agents import SupervisorAgent, WorkerAgent
 from application.infra.pdf_parser import PyPDFReader
-from application.infra.agents import WorkerAgent, SupervisorAgent
 from application.pipeline import ProcessNewArticle
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

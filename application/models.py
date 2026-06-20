@@ -31,6 +31,14 @@ class ArticleMetadata(BaseModel):
     reasoning: str | None = None  # Optional field to capture LLM's reasoning process
 
 
+class EvaluationResponse(BaseModel):
+    """Structured response from the SupervisorAgent's evaluation."""
+
+    is_approved: bool
+    feedback: str
+    suggested_corrections: ArticleMetadata | None = None
+
+
 class ProcessingContext(BaseModel):
     """
     State Object for the pipeline.
@@ -41,6 +49,9 @@ class ProcessingContext(BaseModel):
     raw_text: str
     draft_metadata: ArticleMetadata | None = None  # Populated by Worker
     final_metadata: ArticleMetadata | None = None  # Populated by Supervisor
+    superviser_review: EvaluationResponse | None = None  # Supervisor's feedback and approval status
 
     # We can even add tracking metadata here!
     total_tokens_used: int = 0
+
+
