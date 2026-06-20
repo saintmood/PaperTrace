@@ -24,3 +24,11 @@ class IRepository(Protocol):
     def save_article(self, context: ProcessingContext) -> None:
         """Save the article in the repository based on the processing context."""
         ...
+
+
+class IRunner(Protocol):
+    """Contract for running the processing pipeline."""
+
+    async def run(self) -> None:
+        """Starts the processing pipeline."""
+        ...

@@ -15,12 +15,15 @@ class ApplicationConfig(BaseSettings):
     )
 
     # 2. File System and Database Paths
-    database_path: str = Field(
-        default="db/archive.db", description="Relative or absolute path to the SQLite database."
+    database_name: str = Field(
+        default="papertrace.db", description="Relative or absolute path to the SQLite database."
     )
     storage_path: str = Field(
         default="storage/archives",
         description="Directory where approved PDFs will be permanently stored.",
+    )
+    raw_whitepapers_path: str = Field(
+        default="storage/raw_whitepapers", description="Directory for incoming unprocessed PDFs."
     )
 
     # 3. Protective Shields (The "Sarcophagus" Limits)
@@ -29,12 +32,6 @@ class ApplicationConfig(BaseSettings):
     )
     max_token_budget: int = Field(
         default=20000, description="Maximum tokens allowed per processing pipeline run."
-    )
-    # Tell Pydantic to read from the local .env file
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",  # Ignore any extra variables in the .env file
     )
 
     ollama_base_url: str = Field(
@@ -49,5 +46,6 @@ class ApplicationConfig(BaseSettings):
         default=3, description="Maximum retries for worker tasks before giving up."
     )
 
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = ApplicationConfig()
