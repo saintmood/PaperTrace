@@ -5,6 +5,7 @@ import click
 
 from application.infra.agents import SupervisorAgent, WorkerAgent
 from application.infra.pdf_parser import PyPDFReader
+from application.infra.sqlite_repo import SQLiteRepository
 from application.pipeline import ProcessNewArticle
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -15,6 +16,7 @@ def build_process_use_case() -> ProcessNewArticle:
         pdf_reader=PyPDFReader(),
         worker_agent=WorkerAgent(),
         supervisor_agent=SupervisorAgent(),
+        repo=SQLiteRepository(db_name="papertrace.db"),
     )
 
 

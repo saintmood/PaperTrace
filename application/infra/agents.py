@@ -87,7 +87,7 @@ class SupervisorAgent(ILLMAgent):
         logger.info("SupervisorAgent is reviewing the draft metadata...")
         if not context.draft_metadata:
             raise ValueError("SupervisorAgent requires a draft_metadata to review.")
-        
+
         draft_metadata_json = context.draft_metadata.model_dump_json(indent=2)
         response = review_article_metadata(context.raw_text, draft_metadata_json)
         supervisor_evaluation: EvaluationResponse = response.parse()

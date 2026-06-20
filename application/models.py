@@ -6,10 +6,11 @@ from pydantic import BaseModel
 class ArticleState(str, Enum):
     """Represents the lifecycle state of a parsed document."""
 
-    RAW = "RAW"
-    PENDING_REVIEW = "PENDING_REVIEW"
+    APPROVED = "APPROVED"
     ARCHIVED = "ARCHIVED"
+    PENDING_REVIEW = "PENDING_REVIEW"
     REJECTED = "REJECTED"
+    RAW = "RAW"
 
 
 class DocumentRecord(BaseModel):
@@ -37,6 +38,7 @@ class EvaluationResponse(BaseModel):
     is_approved: bool
     feedback: str
     suggested_corrections: ArticleMetadata | None = None
+    proposed_filename: str
 
 
 class ProcessingContext(BaseModel):
@@ -53,5 +55,3 @@ class ProcessingContext(BaseModel):
 
     # We can even add tracking metadata here!
     total_tokens_used: int = 0
-
-

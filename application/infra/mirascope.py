@@ -80,6 +80,12 @@ def review_article_metadata(
     3. Ensure the Abstract is not cut off.
     4. If the draft is perfect, set 'is_approved' to true.
     5. If there are ANY errors, set 'is_approved' to false, explain the error in 'feedback', and provide the fixed metadata in 'suggested_corrections'.
+
+    FILENAME RULES:
+    1. Generate a 'proposed_filename' using the format: "FirstAuthorSurname_First_Few_Words_Of_Title.pdf"
+    2. ONLY use alphanumeric characters, underscores (_), and hyphens (-). 
+    3. DO NOT use spaces, commas, quotes, colons, or special characters.
+    4. Example: "Smith_Analysis_of_organic_light.pdf"
     
     CRITICAL FORMATTING RULES:
     1. You MUST return ONLY pure, valid JSON.

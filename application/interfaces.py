@@ -16,3 +16,11 @@ class ILLMAgent(Protocol):
     """
 
     def process(self, context: ProcessingContext) -> ProcessingContext: ...
+
+
+class IRepository(Protocol):
+    """Contract for saving articles to a repository."""
+
+    def save_article(self, context: ProcessingContext) -> None:
+        """Save the article in the repository based on the processing context."""
+        ...
