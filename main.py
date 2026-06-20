@@ -35,11 +35,8 @@ def process(file_path: str):
     use_case = build_process_use_case()
 
     try:
-        record = use_case.execute(file_path)
+        use_case.execute(file_path)
         click.secho("\n✨ Pipeline Completed Successfully!", fg="green", bold=True)
-        click.echo(f"ID: {record.id}")
-        click.echo(f"Title: {record.metadata.title}")
-        click.secho(f"State: {record.state.value} (Waiting for human review)", fg="yellow")
 
     except Exception as e:
         click.secho(f"\n❌ Pipeline failed: {e}", fg="red", bold=True)

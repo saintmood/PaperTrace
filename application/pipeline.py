@@ -20,7 +20,7 @@ class ProcessNewArticle:
     ):
         self.pdf_reader = pdf_reader
         self.worker_agent = worker_agent
-        self.supervisor_agent = (supervisor_agent,)
+        self.supervisor_agent = supervisor_agent
         self.article_repo = repo
 
     def execute(self, file_path: str):
@@ -35,7 +35,7 @@ class ProcessNewArticle:
         if context.final_metadata:
             self.article_repo.save_article(
                 metadata=context.final_metadata,
-                proposed_filename=context.proposed_filename,
+                proposed_filename=context.supervisor_review.proposed_filename,
                 status=ArticleState.PENDING_REVIEW,
             )
         logger.info("✅ Pipeline successfully completed! Data saved to DB.")

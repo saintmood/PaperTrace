@@ -51,7 +51,7 @@ class ProcessingContext(BaseModel):
     raw_text: str
     draft_metadata: ArticleMetadata | None = None  # Populated by Worker
     final_metadata: ArticleMetadata | None = None  # Populated by Supervisor
-    superviser_review: EvaluationResponse | None = None  # Supervisor's feedback and approval status
+    supervisor_review: EvaluationResponse | None = None  # Supervisor's feedback and approval status
 
     # We can even add tracking metadata here!
     total_tokens_used: int = 0

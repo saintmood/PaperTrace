@@ -93,6 +93,6 @@ class SupervisorAgent(ILLMAgent):
         supervisor_evaluation: EvaluationResponse = response.parse()
         if supervisor_evaluation.is_approved:
             context.final_metadata = context.draft_metadata
-            context.superviser_review = supervisor_evaluation
+            context.supervisor_review = supervisor_evaluation
             logger.info("SupervisorAgent approved the draft metadata.")
         return context
