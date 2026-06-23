@@ -60,5 +60,6 @@ def run():
         click.secho(f"\n❌ Runner failed: {e}", fg="red", bold=True)
         sys.exit(1)
 
+
 if __name__ == "__main__":
     cli()

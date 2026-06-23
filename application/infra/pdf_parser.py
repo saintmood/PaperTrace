@@ -13,30 +13,41 @@ class PyPDFReader(IPDFReader):
 
     def extract_text(self, file_path: str) -> str:
         """
-        Extracts only Page 1, 2, 3, Last, and Penultimate pages.
+        Extracts up to the first 3 pages, and searches backwards for the Conclusion.
+        Safely handles short documents (1 or 2 pages).
         """
         doc = fitz.open(file_path)
-        page_conunt = doc.page_count
-        logger.info("Extracting the first page (Title, Authors, Keyword)")
-        first_page = doc.load_page(0).get_text("text")
-        second_page = doc.load_page(1).get_text("text")
-        third_page = doc.load_page(2).get_text("text")
+        page_count = doc.page_count
+        logger.info(f"Starting extraction. Document has {page_count} page(s).")
+
+        # 1. Safely extract up to the first 3 pages
+        front_pages = []
+        max_front_pages = min(3, page_count)
+
+        for i in range(max_front_pages):
+            logger.info(f"Extracting front page {i + 1}")
+            front_pages.append(doc.load_page(i).get_text("text"))
+
+        first_pages_combined = "\n".join(front_pages)
+
+        # 2. Search for the conclusion starting from the last page, going backwards
         conclusion_page = None
-        for idx in range(page_conunt - 1, 0, -1):
+        # Note: -1 as the stop argument ensures we check page 0 if it's a very short document
+        for idx in range(page_count - 1, -1, -1):
             page_text = doc.load_page(idx).get_text("text")
+
+            # Use regex to find the Conclusion section
             if re.search(
                 r"(?m)^\s*(?:\d+\.?|[IVX]+\.?\s*)?Conclusions?\b", page_text, re.IGNORECASE
             ):
-                logger.info(f"Extracting the conclusion page (Page {idx + 1})")
+                logger.info(f"Conclusion found on page {idx + 1}")
                 conclusion_page = page_text
-        raw_text = (
-            first_page
-            + "\n"
-            + second_page
-            + "\n"
-            + third_page
-            + "\n"
-            + "\nCONCLUSIONS\n"
-            + (conclusion_page if conclusion_page else "")
-        )
+                break  # CRITICAL: Stop searching once we find the last conclusion!
+
+        # 3. Assemble the final raw text
+        raw_text = first_pages_combined
+
+        if conclusion_page:
+            raw_text += "\n\nCONCLUSIONS\n" + conclusion_page
+
         return raw_text

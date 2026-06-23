@@ -2,8 +2,8 @@ import asyncio
 import logging
 from pathlib import Path
 
-from config import settings
 from application.interfaces import IRunner
+from config import settings
 
 logger = logging.getLogger(__name__)
 

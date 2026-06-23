@@ -25,7 +25,7 @@ class ProcessNewArticle:
 
     def execute(self, file_path: str):
         # 1. Initialize the State Object
-        raw_text = self.pdf_reader.extract_optimized_text(file_path)
+        raw_text = self.pdf_reader.extract_text(file_path)
         context: ProcessingContext = ProcessingContext(file_path=file_path, raw_text=raw_text)
 
         # 2. Pipeline Execution (The State moves through the agents)

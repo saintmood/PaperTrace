@@ -42,10 +42,14 @@ class ApplicationConfig(BaseSettings):
         default="sk-no-key-required",
     )
 
+    test_llm_base_url: str = Field(default="http://127.0.0.1:8080/v1")
+    test_openai_api_key: str = Field(default="sk-no-key-required")
+
     worker_max_retries: int = Field(
         default=3, description="Maximum retries for worker tasks before giving up."
     )
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 settings = ApplicationConfig()
