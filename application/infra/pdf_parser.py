@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class PyPDFReader(IPDFReader):
-    """Concrete implementation for PDF processing."""
+    """Implementation for PDF processing."""
 
-    def extract_optimized_text(self, file_path: str) -> str:
+    def extract_text(self, file_path: str) -> str:
         """
-        Extracts only Page 1, Last, and Penultimate pages.
+        Extracts only Page 1, 2, 3, Last, and Penultimate pages.
         """
         doc = fitz.open(file_path)
         page_conunt = doc.page_count

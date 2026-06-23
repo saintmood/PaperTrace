@@ -13,15 +13,6 @@ class ArticleState(str, Enum):
     RAW = "RAW"
 
 
-class DocumentRecord(BaseModel):
-    """Database record representation."""
-
-    id: str | None = None
-    file_path: str
-    metadata: ArticleMetadata
-    state: ArticleState = ArticleState.RAW
-
-
 class ArticleMetadata(BaseModel):
     """Pure Domain Model: Only the final structured data."""
 
